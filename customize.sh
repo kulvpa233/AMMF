@@ -44,7 +44,13 @@ version_check() {
         Aurora_abort "Android API: $ERROR_UNSUPPORTED_VERSION $API ($ERROR_VERSION_NUMBER >= $ANDROID_API)" 2
     fi
 }
-
+replace_module_id() {
+    if [ -f "$MODPATH/webroot/js/app.js" ] && [ -n "$MODULE_ID" ]; then
+        Aurora_ui_print "Setting WebUI..."
+        sed -i "s/AMMF/$MODULE_ID/g" "$MODPATH/webroot/js/app.js"
+        Aurora_ui_print "WebUI Done"
+    fi
+}
 CustomShell() {
     if [ "$CustomScript" = "false" ]; then
         Aurora_ui_print "$CUSTOM_SCRIPT_DISABLED"

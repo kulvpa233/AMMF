@@ -10,7 +10,7 @@ CustomScript=true
 # Path definitions for various directories
 SDCARD="/storage/emulated/0"           # Path to user-space sdcard
 download_destination="/$SDCARD/Download/AMMF/" # Download path
-max_retries="3"                      # Maximum number of download retries
+max_retries=3                      # Maximum number of download retries
 
 # Magisk module settings
 CustomScriptPath="/settings/custom_script.sh"   # Path to custom script
