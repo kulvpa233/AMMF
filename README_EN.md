@@ -27,6 +27,11 @@ Welcome to use this module framework! Here are the steps to get started:
 - You should choose `./settings/custom_script.sh` as the custom script.
 - This framework provides some functions, please read the [instructions](SCRIPT_EN.md).
 
+## 🌐 Custom WebUI
+
+- WebUI allows users to easily configure the values of variables in `settings.sh`.
+- See [WebUI User Guide](WEBUI_GUIDE_EN.md) for more information.
+
 ## 🖱️ User Scripts
 
 - `Click.sh` can be used by users to execute scripts provided by the module outside the module, and can be renamed to `action.sh` (with some limitations when executed within Magisk).

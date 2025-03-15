@@ -27,6 +27,11 @@
 - 应该选择 `./settings/custom_script.sh` 作为自定义脚本。
 - 本框架提供了一些函数，请阅读 [使用说明](SCRIPT.md)
 
+## 🌐 自定义WebUI
+
+- WEBUI可以使用户方便的设置 `settings.sh` 中变量的值。
+[WEBUI 使用说明](WEBUI_GUIDE.md)
+
 ## 🖱️ 用户脚本
 
 - `Click.sh` 可供用户在模块外执行模块提供的适用于用户的脚本，可改为 `action.sh`（Magisk内执行有某些限制）。
