@@ -68,10 +68,15 @@ async function loadExcludedSettings() {
         const excludedContent = await execCommand('cat /data/adb/modules/AMMF/webui/excluded_settings.json');
         const excludedData = JSON.parse(excludedContent);
         state.excludedSettings = excludedData.excluded || [];
+        
+        // 确保MODULE_ID被排除
+        if (!state.excludedSettings.includes('MODULE_ID')) {
+            state.excludedSettings.push('MODULE_ID');
+        }
     } catch (error) {
         console.error('Error loading excluded settings:', error);
-        // 如果加载失败，使用空数组
-        state.excludedSettings = [];
+        // 如果加载失败，使用默认排除列表
+        state.excludedSettings = ['MODULE_ID'];
     }
 }
 
@@ -285,22 +290,80 @@ function generateSettingsForm() {
             settingItem.appendChild(switchContainer);
             
         } else if (setting.type === 'number') {
-            // 创建滑动条
-            const rangeContainer = document.createElement('div');
-            rangeContainer.className = 'range-container';
+            // 创建数字输入控件
+            const numContainer = document.createElement('div');
+            numContainer.className = 'range-container';
             
-            const input = document.createElement('input');
-            input.type = 'range';
-            input.className = 'range-input';
-            input.id = `setting-${key}`;
-            input.min = 0;
-            input.max = Math.max(100, parseInt(setting.value) * 2);
-            input.value = setting.value;
-            input.addEventListener('input', function() {
-                // 更新状态中的值
+            // 数字值
+            const numValue = parseInt(setting.value);
+            
+            // 如果数字大于100，直接使用输入框
+            const useInputBox = numValue > 100;
+            
+            // 创建输入框
+            const textInput = document.createElement('input');
+            textInput.type = 'number';
+            textInput.className = 'text-input';
+            textInput.style.width = '80px';
+            textInput.style.marginRight = '10px';
+            textInput.value = numValue;
+            textInput.id = `setting-${key}`;
+            textInput.style.display = useInputBox ? 'inline-block' : 'none';
+            
+            // 创建滑动条
+            const rangeInput = document.createElement('input');
+            rangeInput.type = 'range';
+            rangeInput.className = 'range-input';
+            rangeInput.min = 0;
+            rangeInput.max = Math.max(100, numValue * 2);
+            rangeInput.value = numValue;
+            rangeInput.style.display = useInputBox ? 'none' : 'block';
+            
+            // 显示当前值
+            const valueDisplay = document.createElement('span');
+            valueDisplay.className = 'range-value';
+            valueDisplay.textContent = numValue;
+            valueDisplay.style.display = useInputBox ? 'none' : 'inline-block';
+            
+            // 切换按钮
+            const toggleBtn = document.createElement('button');
+            toggleBtn.className = 'icon-button';
+            toggleBtn.innerHTML = '<span class="material-symbols-outlined">' + 
+                                 (useInputBox ? 'tune' : 'edit') + '</span>';
+            toggleBtn.title = useInputBox ? '使用滑动条' : '使用输入框';
+            
+            // 滑动条事件
+            rangeInput.addEventListener('input', function() {
+                valueDisplay.textContent = this.value;
+                textInput.value = this.value;
                 state.settings[key].value = this.value;
             });
-            settingItem.appendChild(input);
+            
+            // 输入框事件
+            textInput.addEventListener('input', function() {
+                rangeInput.value = this.value;
+                valueDisplay.textContent = this.value;
+                state.settings[key].value = this.value;
+            });
+            
+            // 切换按钮事件
+            toggleBtn.addEventListener('click', function() {
+                const isInputVisible = textInput.style.display !== 'none';
+                textInput.style.display = isInputVisible ? 'none' : 'inline-block';
+                rangeInput.style.display = isInputVisible ? 'block' : 'none';
+                valueDisplay.style.display = isInputVisible ? 'inline-block' : 'none';
+                this.innerHTML = '<span class="material-symbols-outlined">' + 
+                               (isInputVisible ? 'edit' : 'tune') + '</span>';
+                this.title = isInputVisible ? '使用输入框' : '使用滑动条';
+            });
+            
+            numContainer.appendChild(rangeInput);
+            numContainer.appendChild(textInput);
+            numContainer.appendChild(valueDisplay);
+            numContainer.appendChild(toggleBtn);
+            settingItem.appendChild(numContainer);
+        } else {
+            // ... 其他代码保持不变 ...
         }
         
         formContainer.appendChild(settingItem);
@@ -330,7 +393,10 @@ async function saveSettings() {
             if (setting.type === 'boolean') {
                 updatedSettings[key] = input.checked ? 'true' : 'false';
             } else if (setting.type === 'number') {
-                updatedSettings[key] = input.value;
+                // 确保数字值有效
+                let numValue = parseInt(input.value);
+                if (isNaN(numValue)) numValue = 0;
+                updatedSettings[key] = numValue.toString();
             } else {
                 // 文本类型，检查是否需要添加引号
                 let value = input.value;
