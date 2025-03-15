@@ -1,5 +1,5 @@
-// 导入KernelSU API
-import { exec, toast } from 'kernelsu';
+// 使用全局KernelSU API而不是导入
+// import { exec, toast } from 'kernelsu'; - 删除这一行
 
 // 存储设置项
 let settings = {};
@@ -8,7 +8,15 @@ let originalSettings = {};
 // 初始化
 async function init() {
     try {
-        await loadSettings();
+        // 检查KernelSU API是否可用
+        if (typeof KernelSU === 'undefined' || !KernelSU.exec) {
+            // 如果KernelSU API不可用，使用模拟数据进行测试
+            console.warn('KernelSU API不可用，使用模拟数据');
+            await mockLoadSettings();
+        } else {
+            await loadSettings();
+        }
+        
         renderSettingsForm();
         document.getElementById('loading').style.display = 'none';
         document.getElementById('settings-form').style.display = 'block';
@@ -19,12 +27,55 @@ async function init() {
     } catch (error) {
         console.error('初始化失败:', error);
         showToast('初始化失败: ' + error.message);
+        // 显示错误信息，而不是一直显示加载中
+        document.getElementById('loading-text').textContent = '加载失败: ' + error.message;
     }
+}
+
+// 模拟加载设置（当KernelSU API不可用时使用）
+async function mockLoadSettings() {
+    // 模拟数据
+    settings = {
+        print_languages: 'zh',
+        enable_feature1: true,
+        enable_feature2: false,
+        custom_value: '示例值'
+    };
+    
+    // 模拟描述
+    settingsDescriptions = {
+        print_languages: {
+            zh: '显示语言',
+            en: 'Display Language'
+        },
+        enable_feature1: {
+            zh: '启用功能1',
+            en: 'Enable Feature 1'
+        },
+        enable_feature2: {
+            zh: '启用功能2',
+            en: 'Enable Feature 2'
+        },
+        custom_value: {
+            zh: '自定义值',
+            en: 'Custom Value'
+        }
+    };
+    
+    // 保存原始设置用于重置
+    originalSettings = JSON.parse(JSON.stringify(settings));
+    
+    // 设置语言
+    currentLang = settings.print_languages === 'en' ? 'en' : 'zh';
+    setLanguage(currentLang);
+    
+    return Promise.resolve();
 }
 
 // 从settings.sh加载设置
 async function loadSettings() {
-    const { errno, stdout } = await exec('cat /data/adb/modules/AMMF/settings.sh');
+    // 使用全局KernelSU对象
+    const { errno, stdout } = await KernelSU.exec('cat /data/adb/modules/AMMF/settings.sh');
     
     if (errno !== 0) {
         throw new Error('无法读取设置文件');
@@ -172,23 +223,31 @@ async function saveSettings() {
             }
         }
         
+        // 如果KernelSU API不可用，只显示成功消息而不实际保存
+        if (typeof KernelSU === 'undefined' || !KernelSU.exec) {
+            console.log('模拟保存设置:', settingsContent);
+            showToast(translations[currentLang].saveSuccess + ' (模拟模式)');
+            originalSettings = JSON.parse(JSON.stringify(settings));
+            return;
+        }
+        
         // 写入文件
         const tempFile = '/data/local/tmp/ammf_settings.sh';
-        const { errno } = await exec(`echo '${settingsContent}' > ${tempFile}`);
+        const { errno } = await KernelSU.exec(`echo '${settingsContent}' > ${tempFile}`);
         
         if (errno !== 0) {
             throw new Error('无法创建临时文件');
         }
         
         // 移动到模块目录
-        const { errno: moveErrno } = await exec(`cp ${tempFile} /data/adb/modules/AMMF/settings.sh && chmod 0755 /data/adb/modules/AMMF/settings.sh`);
+        const { errno: moveErrno } = await KernelSU.exec(`cp ${tempFile} /data/adb/modules/AMMF/settings.sh && chmod 0755 /data/adb/modules/AMMF/settings.sh`);
         
         if (moveErrno !== 0) {
             throw new Error('无法保存设置文件');
         }
         
         // 清理临时文件
-        await exec(`rm ${tempFile}`);
+        await KernelSU.exec(`rm ${tempFile}`);
         
         showToast(translations[currentLang].saveSuccess);
         
