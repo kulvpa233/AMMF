@@ -1,0 +1,15 @@
+{
+  "print_languages": {
+    "options": [
+      {"value": "en", "label": {"en": "English", "zh": "英文"}},
+      {"value": "zh", "label": {"en": "Chinese", "zh": "中文"}}
+    ]
+  },
+  "download_destination": {
+    "options": [
+      {"value": "/sdcard/Download", "label": {"en": "Download folder", "zh": "下载文件夹"}},
+      {"value": "/sdcard/AMMF", "label": {"en": "AMMF folder", "zh": "AMMF文件夹"}},
+      {"value": "/data/local/tmp", "label": {"en": "Temporary folder", "zh": "临时文件夹"}}
+    ]
+  }
+}

@@ -9,7 +9,9 @@ const translations = {
         booleanTrue: 'Enabled',
         booleanFalse: 'Disabled',
         loadingDescriptions: 'Loading descriptions...',
-        loadingExclusions: 'Loading exclusions...'
+        loadingExclusions: 'Loading exclusions...',
+        loadingOptions: 'Loading options...',
+        select: 'Select'
     },
     zh: {
         title: '模块设置',
@@ -20,7 +22,9 @@ const translations = {
         booleanTrue: '已启用',
         booleanFalse: '已禁用',
         loadingDescriptions: '加载描述中...',
-        loadingExclusions: '加载排除项中...'
+        loadingExclusions: '加载排除项中...',
+        loadingOptions: '加载选项中...',
+        select: '选择'
     }
 };
 
@@ -30,7 +34,8 @@ const state = {
     language: 'en',
     isDarkMode: false,
     excludedSettings: [],
-    settingsDescriptions: {}
+    settingsDescriptions: {},
+    settingsOptions: {}  // 新增：存储设置选项
 };
 
 // 初始化应用
@@ -44,6 +49,9 @@ async function initApp() {
         
         // 加载设置描述
         await loadSettingsDescriptions();
+        
+        // 加载设置选项
+        await loadSettingsOptions();
         
         // 加载设置
         await loadSettings();
@@ -90,6 +98,19 @@ async function loadSettingsDescriptions() {
         console.error('Error loading settings descriptions:', error);
         // 如果加载失败，使用空对象
         state.settingsDescriptions = {};
+    }
+}
+
+// 加载设置选项
+async function loadSettingsOptions() {
+    try {
+        // 尝试从文件加载设置选项
+        const optionsContent = await execCommand('cat /data/adb/modules/AMMF/webroot/settings/settings_options.json');
+        state.settingsOptions = JSON.parse(optionsContent);
+    } catch (error) {
+        console.error('Error loading settings options:', error);
+        // 如果加载失败，使用空对象
+        state.settingsOptions = {};
     }
 }
 
@@ -149,6 +170,20 @@ function updateLanguage() {
             translations[state.language].booleanTrue : 
             translations[state.language].booleanFalse;
     });
+    
+    // 更新选择框选项
+    const selects = document.querySelectorAll('.select-input');
+    selects.forEach(select => {
+        const key = select.id.replace('setting-', '');
+        if (state.settingsOptions[key] && state.settingsOptions[key].options) {
+            Array.from(select.options).forEach((option, index) => {
+                const optionData = state.settingsOptions[key].options[index];
+                if (optionData && optionData.label) {
+                    option.textContent = optionData.label[state.language] || optionData.value;
+                }
+            });
+        }
+    });
 }
 
 // 加载设置
@@ -194,24 +229,27 @@ function parseSettings(content) {
             let value = match[2].trim();
             let originalFormat = value; // 保存原始格式用于保存时恢复引号和格式
             
+            // 检查是否为带引号的字符串，并提取实际值用于类型判断
+            let valueForTypeCheck = value;
+            if ((value.startsWith('"') && value.endsWith('"')) || 
+                (value.startsWith("'") && value.endsWith("'"))) {
+                // 保存原始值（带引号）用于保存时恢复格式
+                originalFormat = value;
+                // 移除引号用于显示和类型判断
+                valueForTypeCheck = value.substring(1, value.length - 1);
+                value = valueForTypeCheck;
+            }
+            
             // 确定变量类型
             let type = 'text';
             
             // 检查是否为布尔值
-            if (value === 'true' || value === 'false') {
+            if (valueForTypeCheck === 'true' || valueForTypeCheck === 'false') {
                 type = 'boolean';
             } 
             // 检查是否为数字
-            else if (!isNaN(value) && value.trim() !== '') {
+            else if (!isNaN(valueForTypeCheck) && valueForTypeCheck.trim() !== '') {
                 type = 'number';
-            }
-            // 检查是否为带引号的字符串
-            else if ((value.startsWith('"') && value.endsWith('"')) || 
-                     (value.startsWith("'") && value.endsWith("'"))) {
-                // 保存原始值（带引号）用于保存时恢复格式
-                originalFormat = value;
-                // 移除引号用于显示
-                value = value.substring(1, value.length - 1);
             }
             
             // 存储设置
@@ -253,8 +291,38 @@ function generateSettingsForm() {
         
         settingItem.appendChild(label);
         
-        // 根据类型创建不同的控件
-        if (setting.type === 'boolean') {
+        // 检查是否有预定义的选项
+        if (state.settingsOptions[key] && state.settingsOptions[key].options) {
+            // 创建选择框
+            const selectContainer = document.createElement('div');
+            selectContainer.className = 'select-container';
+            
+            const select = document.createElement('select');
+            select.className = 'select-input';
+            select.id = `setting-${key}`;
+            
+            // 添加选项
+            state.settingsOptions[key].options.forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option.value;
+                optionElement.textContent = option.label[state.language] || option.value;
+                
+                // 设置当前选中的选项
+                if (setting.value === option.value) {
+                    optionElement.selected = true;
+                }
+                
+                select.appendChild(optionElement);
+            });
+            
+            // 监听选择变化
+            select.addEventListener('change', function() {
+                state.settings[key].value = this.value;
+            });
+            
+            selectContainer.appendChild(select);
+            settingItem.appendChild(selectContainer);
+        } else if (setting.type === 'boolean') {
             // 创建开关
             const switchContainer = document.createElement('div');
             switchContainer.style.display = 'flex';
@@ -392,9 +460,10 @@ async function saveSettings() {
         for (const key in state.settings) {
             const setting = state.settings[key];
             
-            // 对于排除的设置项，保持原值
+            // 对于排除的设置项，保持原值和原始格式
             if (state.excludedSettings.includes(key)) {
-                updatedSettings[key] = setting.value;
+                // 使用原始格式而不仅仅是值，这样可以保留引号
+                updatedSettings[key] = setting.originalFormat || setting.value;
                 continue;
             }
             
