@@ -7,7 +7,9 @@ const translations = {
         saveSuccess: 'Settings saved successfully!',
         saveError: 'Error saving settings',
         booleanTrue: 'Enabled',
-        booleanFalse: 'Disabled'
+        booleanFalse: 'Disabled',
+        loadingDescriptions: 'Loading descriptions...',
+        loadingExclusions: 'Loading exclusions...'
     },
     zh: {
         title: '模块设置',
@@ -16,7 +18,9 @@ const translations = {
         saveSuccess: '设置保存成功！',
         saveError: '保存设置时出错',
         booleanTrue: '已启用',
-        booleanFalse: '已禁用'
+        booleanFalse: '已禁用',
+        loadingDescriptions: '加载描述中...',
+        loadingExclusions: '加载排除项中...'
     }
 };
 
@@ -24,7 +28,9 @@ const translations = {
 const state = {
     settings: {},
     language: 'en',
-    isDarkMode: false
+    isDarkMode: false,
+    excludedSettings: [],
+    settingsDescriptions: {}
 };
 
 // 初始化应用
@@ -32,16 +38,54 @@ async function initApp() {
     // 检测系统暗色模式
     checkDarkMode();
     
-    // 加载设置
-    await loadSettings();
-    
-    // 设置事件监听器
-    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-    document.getElementById('language-toggle').addEventListener('click', toggleLanguage);
-    document.getElementById('save-button').addEventListener('click', saveSettings);
-    
-    // 更新UI语言
-    updateLanguage();
+    try {
+        // 加载排除设置
+        await loadExcludedSettings();
+        
+        // 加载设置描述
+        await loadSettingsDescriptions();
+        
+        // 加载设置
+        await loadSettings();
+        
+        // 设置事件监听器
+        document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+        document.getElementById('language-toggle').addEventListener('click', toggleLanguage);
+        document.getElementById('save-button').addEventListener('click', saveSettings);
+        
+        // 更新UI语言
+        updateLanguage();
+    } catch (error) {
+        console.error('Error initializing app:', error);
+        showSnackbar(translations[state.language].saveError);
+    }
+}
+
+// 加载排除设置
+async function loadExcludedSettings() {
+    try {
+        // 尝试从文件加载排除设置
+        const excludedContent = await execCommand('cat /data/adb/modules/AMMF/webui/excluded_settings.json');
+        const excludedData = JSON.parse(excludedContent);
+        state.excludedSettings = excludedData.excluded || [];
+    } catch (error) {
+        console.error('Error loading excluded settings:', error);
+        // 如果加载失败，使用空数组
+        state.excludedSettings = [];
+    }
+}
+
+// 加载设置描述
+async function loadSettingsDescriptions() {
+    try {
+        // 尝试从文件加载设置描述
+        const descriptionsContent = await execCommand('cat /data/adb/modules/AMMF/webui/settings_descriptions.json');
+        state.settingsDescriptions = JSON.parse(descriptionsContent);
+    } catch (error) {
+        console.error('Error loading settings descriptions:', error);
+        // 如果加载失败，使用空对象
+        state.settingsDescriptions = {};
+    }
 }
 
 // 检测系统暗色模式
@@ -83,7 +127,12 @@ function updateLanguage() {
     settingLabels.forEach(label => {
         const key = label.getAttribute('data-key');
         if (key) {
-            label.textContent = key;
+            // 如果有描述，使用描述，否则使用键名
+            if (state.settingsDescriptions[key] && state.settingsDescriptions[key][state.language]) {
+                label.textContent = key + ' - ' + state.settingsDescriptions[key][state.language];
+            } else {
+                label.textContent = key;
+            }
         }
     });
     
@@ -169,10 +218,12 @@ function generateSettingsForm() {
     const formContainer = document.getElementById('settings-form');
     formContainer.innerHTML = '';
     
-    // 获取设置文件中的注释，用于显示描述
-    const descriptions = {};
-    
     for (const key in state.settings) {
+        // 跳过排除的设置项
+        if (state.excludedSettings.includes(key)) {
+            continue;
+        }
+        
         const setting = state.settings[key];
         const settingItem = document.createElement('div');
         settingItem.className = 'setting-item';
@@ -181,7 +232,14 @@ function generateSettingsForm() {
         const label = document.createElement('label');
         label.className = 'setting-label';
         label.setAttribute('data-key', key);
-        label.textContent = key;
+        
+        // 如果有描述，使用描述，否则使用键名
+        if (state.settingsDescriptions[key] && state.settingsDescriptions[key][state.language]) {
+            label.textContent = key + ' - ' + state.settingsDescriptions[key][state.language];
+        } else {
+            label.textContent = key;
+        }
+        
         settingItem.appendChild(label);
         
         // 根据类型创建不同的控件
@@ -199,10 +257,14 @@ function generateSettingsForm() {
             input.checked = setting.value === 'true';
             input.id = `setting-${key}`;
             input.addEventListener('change', function() {
-                const booleanValue = this.nextElementSibling.nextElementSibling;
+                // 修复布尔值实时更新的bug
+                const booleanValue = switchContainer.querySelector('.boolean-value');
                 booleanValue.textContent = this.checked ? 
                     translations[state.language].booleanTrue : 
                     translations[state.language].booleanFalse;
+                
+                // 更新状态中的值
+                state.settings[key].value = this.checked ? 'true' : 'false';
             });
             
             const slider = document.createElement('span');
@@ -234,35 +296,11 @@ function generateSettingsForm() {
             input.min = 0;
             input.max = Math.max(100, parseInt(setting.value) * 2);
             input.value = setting.value;
-            
-            const valueDisplay = document.createElement('span');
-            valueDisplay.className = 'range-value';
-            valueDisplay.textContent = setting.value;
-            
             input.addEventListener('input', function() {
-                valueDisplay.textContent = this.value;
+                // 更新状态中的值
+                state.settings[key].value = this.value;
             });
-            
-            rangeContainer.appendChild(input);
-            rangeContainer.appendChild(valueDisplay);
-            settingItem.appendChild(rangeContainer);
-            
-        } else {
-            // 创建文本输入框
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.className = 'text-input';
-            input.id = `setting-${key}`;
-            input.value = setting.value;
             settingItem.appendChild(input);
-        }
-        
-        // 添加描述（如果有）
-        if (descriptions[key]) {
-            const description = document.createElement('div');
-            description.className = 'setting-description';
-            description.textContent = descriptions[key];
-            settingItem.appendChild(description);
         }
         
         formContainer.appendChild(settingItem);
@@ -277,7 +315,17 @@ async function saveSettings() {
         
         for (const key in state.settings) {
             const setting = state.settings[key];
+            
+            // 对于排除的设置项，保持原值
+            if (state.excludedSettings.includes(key)) {
+                updatedSettings[key] = setting.value;
+                continue;
+            }
+            
             const input = document.getElementById(`setting-${key}`);
+            
+            // 如果找不到输入元素（可能是排除的设置），跳过
+            if (!input) continue;
             
             if (setting.type === 'boolean') {
                 updatedSettings[key] = input.checked ? 'true' : 'false';

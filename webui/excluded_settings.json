@@ -1,0 +1,8 @@
+{
+  "excluded": [
+    "MODULE_ID",
+    "MODULE_NAME",
+    "MODULE_DES",
+    "ANDROID_API"
+  ]
+}
