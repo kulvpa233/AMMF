@@ -45,7 +45,7 @@ function setLanguage(lang) {
     const descElements = document.querySelectorAll('.setting-description');
     descElements.forEach(elem => {
         const key = elem.getAttribute('data-i18n-key');
-        if (key && settingsDescriptions[key]) {
+        if (key && sDescriptions[key]) {
             elem.textContent = settingsDescriptions[key][lang];
         }
     });

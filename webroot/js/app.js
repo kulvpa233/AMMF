@@ -75,7 +75,7 @@ async function mockLoadSettings() {
 // 从settings.sh加载设置
 async function loadSettings() {
     // 使用全局KernelSU对象
-    const { errno, stdout } = await KernelSU.exec('cat /data/adb/modules/AMMF/settings.sh');
+    const { errno, stdout } = await KernelSU.exec('cat /data/adb/modules/AMMF/settings/settings.sh');
     
     if (errno !== 0) {
         throw new Error('无法读取设置文件');
@@ -240,7 +240,7 @@ async function saveSettings() {
         }
         
         // 移动到模块目录
-        const { errno: moveErrno } = await KernelSU.exec(`cp ${tempFile} /data/adb/modules/AMMF/settings.sh && chmod 0755 /data/adb/modules/AMMF/settings.sh`);
+        const { errno: moveErrno } = await KernelSU.exec(`cp ${tempFile} /data/adb/modules/AMMF/settings/settings.sh && chmod 0755 /data/adb/modules/AMMF/settings/settings.sh`);
         
         if (moveErrno !== 0) {
             throw new Error('无法保存设置文件');
