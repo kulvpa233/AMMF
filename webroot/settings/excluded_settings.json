@@ -1,0 +1,19 @@
+{
+  "excluded": [
+    "MODULE_ID",
+    "MODULE_NAME",
+    "MODULE_DES",
+    "CustomScript",
+    "max_retries",
+    "MODULE_AUTHOR",
+    "SDCARD",
+    "CustomScriptPath",
+    "langpath",
+    "script_path",
+    "magisk_min_version",
+    "ksu_min_version",
+    "ksu_min_kernel_version",
+    "apatch_min_version",
+    "ANDROID_API"
+  ]
+}

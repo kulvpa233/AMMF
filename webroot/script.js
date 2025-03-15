@@ -65,7 +65,7 @@ async function initApp() {
 async function loadExcludedSettings() {
     try {
         // 尝试从文件加载排除设置
-        const excludedContent = await execCommand('cat /data/adb/modules/AMMF/webroot/excluded_settings.json');
+        const excludedContent = await execCommand('cat /data/adb/modules/AMMF/webroot/settings/excluded_settings.json');
         const excludedData = JSON.parse(excludedContent);
         state.excludedSettings = excludedData.excluded || [];
         
@@ -84,7 +84,7 @@ async function loadExcludedSettings() {
 async function loadSettingsDescriptions() {
     try {
         // 尝试从文件加载设置描述
-        const descriptionsContent = await execCommand('cat /data/adb/modules/AMMF/webroot/settings_descriptions.json');
+        const descriptionsContent = await execCommand('cat /data/adb/modules/AMMF/webroot/settings/settings_descriptions.json');
         state.settingsDescriptions = JSON.parse(descriptionsContent);
     } catch (error) {
         console.error('Error loading settings descriptions:', error);
