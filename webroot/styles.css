@@ -331,3 +331,60 @@ input:checked + .slider:before {
     color: var(--on-surface-color);
     padding: 8px;
 }
+
+/* 语言菜单样式 */
+.language-menu {
+    position: absolute;
+    top: 64px;
+    right: 16px;
+    background-color: var(--surface-color);
+    border-radius: 8px;
+    box-shadow: var(--md-shadow-2);
+    z-index: 100;
+    min-width: 180px;
+    overflow: hidden;
+    animation: menu-fade-in 0.2s ease-out;
+}
+
+@keyframes menu-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.language-menu-title {
+    padding: 16px;
+    font-size: 16px;
+    color: var(--on-surface-variant-color);
+    border-bottom: 1px solid var(--outline-color);
+}
+
+.language-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.language-option {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    color: var(--on-surface-color);
+}
+
+.language-option:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .language-option:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.language-option.selected {
+    color: var(--primary-color);
+    font-weight: 500;
+}

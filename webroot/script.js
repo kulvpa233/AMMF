@@ -1,5 +1,6 @@
 // 语言配置
 const translations = {
+    // 基础翻译，后续会从languages.ini动态加载更多
     en: {
         title: 'AMMF Settings',
         save: 'Save',
@@ -11,7 +12,9 @@ const translations = {
         loadingDescriptions: 'Loading descriptions...',
         loadingExclusions: 'Loading exclusions...',
         loadingOptions: 'Loading options...',
-        select: 'Select'
+        select: 'Select',
+        languageSelect: 'Select Language',
+        languageTitle: 'Available Languages'
     },
     zh: {
         title: '模块设置',
@@ -24,7 +27,9 @@ const translations = {
         loadingDescriptions: '加载描述中...',
         loadingExclusions: '加载排除项中...',
         loadingOptions: '加载选项中...',
-        select: '选择'
+        select: '选择',
+        languageSelect: '选择语言',
+        languageTitle: '可用语言'
     }
 };
 
@@ -35,7 +40,8 @@ const state = {
     isDarkMode: false,
     excludedSettings: [],
     settingsDescriptions: {},
-    settingsOptions: {}  // 新增：存储设置选项
+    settingsOptions: {},  // 存储设置选项
+    availableLanguages: [] // 存储可用语言列表
 };
 
 // 初始化应用
@@ -44,6 +50,9 @@ async function initApp() {
     checkDarkMode();
     
     try {
+        // 加载可用语言
+        await loadAvailableLanguages();
+        
         // 加载排除设置
         await loadExcludedSettings();
         
@@ -58,7 +67,7 @@ async function initApp() {
         
         // 设置事件监听器
         document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-        document.getElementById('language-toggle').addEventListener('click', toggleLanguage);
+        document.getElementById('language-toggle').addEventListener('click', showLanguageMenu);
         document.getElementById('save-button').addEventListener('click', saveSettings);
         
         // 更新UI语言
@@ -67,6 +76,133 @@ async function initApp() {
         console.error('Error initializing app:', error);
         showSnackbar(translations[state.language].saveError);
     }
+}
+
+// 加载可用语言
+async function loadAvailableLanguages() {
+    try {
+        // 尝试从languages.ini加载语言配置
+        const languagesContent = await execCommand('cat /data/adb/modules/AMMF/settings/languages.ini');
+        
+        // 解析languages.ini文件
+        const languageFunctions = languagesContent.match(/lang_([a-z]{2})\(\)/g);
+        
+        if (languageFunctions && languageFunctions.length > 0) {
+            // 提取语言代码
+            state.availableLanguages = languageFunctions.map(func => {
+                const match = func.match(/lang_([a-z]{2})\(\)/);
+                return match ? match[1] : null;
+            }).filter(lang => lang !== null);
+            
+            // 为每种语言加载翻译
+            for (const langCode of state.availableLanguages) {
+                // 如果translations中没有该语言，则初始化
+                if (!translations[langCode]) {
+                    translations[langCode] = {
+                        ...translations.en, // 使用英语作为基础
+                    };
+                }
+                
+                // 提取该语言的翻译内容
+                const langSection = languagesContent.match(new RegExp(`lang_${langCode}\\(\\)[\\s\\S]*?\\}`, 'm'));
+                
+                if (langSection && langSection[0]) {
+                    // 解析翻译键值对
+                    const translationPairs = langSection[0].match(/([A-Z_]+)="([^"]*)"/g);
+                    
+                    if (translationPairs) {
+                        translationPairs.forEach(pair => {
+                            const match = pair.match(/([A-Z_]+)="([^"]*)"/);
+                            if (match && match.length === 3) {
+                                const key = match[1].toLowerCase();
+                                const value = match[2];
+                                
+                                // 将特定的键映射到我们的translations对象
+                                if (key === 'error_text') translations[langCode].saveError = value;
+                                // 可以根据需要添加更多映射
+                            }
+                        });
+                    }
+                }
+            }
+            
+            console.log('Available languages:', state.availableLanguages);
+        }
+    } catch (error) {
+        console.error('Error loading available languages:', error);
+        // 如果加载失败，至少确保有英语和中文
+        state.availableLanguages = ['en', 'zh'];
+    }
+}
+
+// 显示语言选择菜单
+function showLanguageMenu() {
+    // 移除已存在的菜单
+    const existingMenu = document.getElementById('language-menu');
+    if (existingMenu) {
+        existingMenu.remove();
+        return;
+    }
+    
+    // 创建菜单容器
+    const menuContainer = document.createElement('div');
+    menuContainer.id = 'language-menu';
+    menuContainer.className = 'language-menu';
+    
+    // 创建菜单标题
+    const menuTitle = document.createElement('div');
+    menuTitle.className = 'language-menu-title';
+    menuTitle.textContent = translations[state.language].languageTitle;
+    menuContainer.appendChild(menuTitle);
+    
+    // 创建语言列表
+    const languageList = document.createElement('div');
+    languageList.className = 'language-list';
+    
+    // 添加语言选项
+    state.availableLanguages.forEach(langCode => {
+        const langOption = document.createElement('div');
+        langOption.className = 'language-option';
+        if (langCode === state.language) {
+            langOption.classList.add('selected');
+        }
+        
+        // 语言名称显示
+        let langName;
+        switch(langCode) {
+            case 'en': langName = 'English'; break;
+            case 'zh': langName = '中文'; break;
+            case 'jp': langName = '日本語'; break;
+            default: langName = langCode.toUpperCase();
+        }
+        
+        langOption.textContent = langName;
+        
+        // 点击事件
+        langOption.addEventListener('click', () => {
+            state.language = langCode;
+            updateLanguage();
+            menuContainer.remove();
+        });
+        
+        languageList.appendChild(langOption);
+    });
+    
+    menuContainer.appendChild(languageList);
+    
+    // 添加到页面
+    document.body.appendChild(menuContainer);
+    
+    // 点击其他地方关闭菜单
+    setTimeout(() => {
+        const closeMenu = (e) => {
+            if (!menuContainer.contains(e.target) && e.target.id !== 'language-toggle') {
+                menuContainer.remove();
+                document.removeEventListener('click', closeMenu);
+            }
+        };
+        document.addEventListener('click', closeMenu);
+    }, 100);
 }
 
 // 加载排除设置
@@ -107,6 +243,24 @@ async function loadSettingsOptions() {
         // 尝试从文件加载设置选项
         const optionsContent = await execCommand('cat /data/adb/modules/AMMF/webroot/settings/settings_options.json');
         state.settingsOptions = JSON.parse(optionsContent);
+        
+        // 动态更新print_languages选项，使其包含所有可用语言
+        if (state.settingsOptions.print_languages && state.availableLanguages.length > 0) {
+            state.settingsOptions.print_languages.options = state.availableLanguages.map(langCode => {
+                let langName;
+                switch(langCode) {
+                    case 'en': langName = { en: 'English', zh: '英文' }; break;
+                    case 'zh': langName = { en: 'Chinese', zh: '中文' }; break;
+                    case 'jp': langName = { en: 'Japanese', zh: '日文' }; break;
+                    default: langName = { en: langCode.toUpperCase(), zh: langCode.toUpperCase() };
+                }
+                
+                return {
+                    value: langCode,
+                    label: langName
+                };
+            });
+        }
     } catch (error) {
         console.error('Error loading settings options:', error);
         // 如果加载失败，使用空对象
@@ -139,7 +293,10 @@ function toggleTheme() {
 
 // 切换语言
 function toggleLanguage() {
-    state.language = state.language === 'en' ? 'zh' : 'en';
+    // 这个函数保留但不再直接使用，改为通过菜单选择语言
+    const currentIndex = state.availableLanguages.indexOf(state.language);
+    const nextIndex = (currentIndex + 1) % state.availableLanguages.length;
+    state.language = state.availableLanguages[nextIndex];
     updateLanguage();
 }
 
