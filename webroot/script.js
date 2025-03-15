@@ -186,11 +186,13 @@ function parseSettings(content) {
         // 跳过注释和空行
         if (line.trim().startsWith('#') || line.trim() === '') continue;
         
-        // 查找变量赋值
-        const match = line.match(/^([A-Za-z0-9_]+)=(.*)$/);
+        // 使用更精确的正则表达式匹配变量赋值，处理行尾注释
+        const match = line.match(/^([A-Za-z0-9_]+)=([^#]*)(#.*)?$/);
         if (match) {
             const key = match[1];
-            let value = match[2];
+            // 去除值两端的空格
+            let value = match[2].trim();
+            let originalFormat = value; // 保存原始格式用于保存时恢复引号和格式
             
             // 确定变量类型
             let type = 'text';
@@ -206,13 +208,17 @@ function parseSettings(content) {
             // 检查是否为带引号的字符串
             else if ((value.startsWith('"') && value.endsWith('"')) || 
                      (value.startsWith("'") && value.endsWith("'"))) {
+                // 保存原始值（带引号）用于保存时恢复格式
+                originalFormat = value;
+                // 移除引号用于显示
                 value = value.substring(1, value.length - 1);
             }
             
             // 存储设置
             state.settings[key] = {
                 value: value,
-                type: type
+                type: type,
+                originalFormat: originalFormat // 保存原始格式信息
             };
         }
     }
@@ -405,13 +411,18 @@ async function saveSettings() {
                 if (isNaN(numValue)) numValue = 0;
                 updatedSettings[key] = numValue.toString();
             } else {
-                // 文本类型，检查是否需要添加引号
+                // 文本类型，检查原始格式以保持一致性
                 let value = input.value;
-                if (setting.value.startsWith('"') && setting.value.endsWith('"')) {
-                    value = `"${value}"`;
-                } else if (setting.value.startsWith("'") && setting.value.endsWith("'")) {
-                    value = `'${value}'`;
+                
+                // 如果原始值有引号格式，恢复相同的引号格式
+                if (setting.originalFormat && 
+                   ((setting.originalFormat.startsWith('"') && setting.originalFormat.endsWith('"')) || 
+                    (setting.originalFormat.startsWith("'") && setting.originalFormat.endsWith("'")))) {
+                    // 确定使用的是单引号还是双引号
+                    const quoteChar = setting.originalFormat.startsWith('"') ? '"' : "'";
+                    value = `${quoteChar}${value}${quoteChar}`;
                 }
+                
                 updatedSettings[key] = value;
             }
         }
