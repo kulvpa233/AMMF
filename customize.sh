@@ -45,9 +45,9 @@ version_check() {
     fi
 }
 replace_module_id() {
-    if [ -f "$MODPATH/webroot/js/app.js" ] && [ -n "$MODULE_ID" ]; then
+    if [ -f "$MODPATH/webroot/js/app.js" ] && [ -n "$MODID" ]; then
         Aurora_ui_print "Setting WebUI..."
-        sed -i "s/AMMF/$MODULE_ID/g" "$MODPATH/webroot/js/app.js"
+        sed -i "s/AMMF/$MODID/g" "$MODPATH/webroot/js/app.js"
         Aurora_ui_print "WebUI Done"
     fi
 }
