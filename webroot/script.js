@@ -85,12 +85,12 @@ async function loadAvailableLanguages() {
         const languagesContent = await execCommand('cat /data/adb/modules/AMMF/settings/languages.ini');
         
         // 解析languages.ini文件
-        const languageFunctions = languagesContent.match(/lang_([a-z]{2})\(\)/g);
+        const languageFunctions = languagesContent.match(/lang_([a-z]{2,})\(\)/g);
         
         if (languageFunctions && languageFunctions.length > 0) {
             // 提取语言代码
             state.availableLanguages = languageFunctions.map(func => {
-                const match = func.match(/lang_([a-z]{2})\(\)/);
+                const match = func.match(/lang_([a-z]{2,})\(\)/);
                 return match ? match[1] : null;
             }).filter(lang => lang !== null);
             
@@ -114,12 +114,22 @@ async function loadAvailableLanguages() {
                         translationPairs.forEach(pair => {
                             const match = pair.match(/([A-Z_]+)="([^"]*)"/);
                             if (match && match.length === 3) {
-                                const key = match[1].toLowerCase();
+                                const key = match[1];
                                 const value = match[2];
                                 
-                                // 将特定的键映射到我们的translations对象
-                                if (key === 'error_text') translations[langCode].saveError = value;
-                                // 可以根据需要添加更多映射
+                                // 将WebUI相关的键映射到translations对象
+                                if (key.startsWith('WEBUI_')) {
+                                    // 移除WEBUI_前缀并转换为小写
+                                    const translationKey = key.replace('WEBUI_', '').toLowerCase();
+                                    translations[langCode][translationKey] = value;
+                                } else if (key === 'ERROR_TEXT') {
+                                    translations[langCode].saveError = value;
+                                }
+                                
+                                // 添加语言名称
+                                if (key === 'WEBUI_LANGUAGE_NAME') {
+                                    translations[langCode].languageName = value;
+                                }
                             }
                         });
                     }
@@ -152,7 +162,7 @@ function showLanguageMenu() {
     // 创建菜单标题
     const menuTitle = document.createElement('div');
     menuTitle.className = 'language-menu-title';
-    menuTitle.textContent = translations[state.language].languageTitle;
+    menuTitle.textContent = translations[state.language].languageTitle || 'Available Languages';
     menuContainer.appendChild(menuTitle);
     
     // 创建语言列表
@@ -167,13 +177,10 @@ function showLanguageMenu() {
             langOption.classList.add('selected');
         }
         
-        // 语言名称显示
-        let langName;
-        switch(langCode) {
-            case 'en': langName = 'English'; break;
-            case 'zh': langName = '中文'; break;
-            case 'jp': langName = '日本語'; break;
-            default: langName = langCode.toUpperCase();
+        // 使用从languages.ini加载的语言名称
+        let langName = langCode.toUpperCase();
+        if (translations[langCode] && translations[langCode].languageName) {
+            langName = translations[langCode].languageName;
         }
         
         langOption.textContent = langName;
@@ -247,13 +254,19 @@ async function loadSettingsOptions() {
         // 动态更新print_languages选项，使其包含所有可用语言
         if (state.settingsOptions.print_languages && state.availableLanguages.length > 0) {
             state.settingsOptions.print_languages.options = state.availableLanguages.map(langCode => {
-                let langName;
-                switch(langCode) {
-                    case 'en': langName = { en: 'English', zh: '英文' }; break;
-                    case 'zh': langName = { en: 'Chinese', zh: '中文' }; break;
-                    case 'jp': langName = { en: 'Japanese', zh: '日文' }; break;
-                    default: langName = { en: langCode.toUpperCase(), zh: langCode.toUpperCase() };
-                }
+                // 使用从languages.ini加载的语言名称
+                let langName = {};
+                
+                // 为每种UI语言提供当前语言的名称
+                state.availableLanguages.forEach(uiLang => {
+                    if (translations[langCode] && translations[langCode].languageName) {
+                        // 如果有该语言的本地化名称，优先使用
+                        langName[uiLang] = translations[langCode].languageName;
+                    } else {
+                        // 否则使用默认名称
+                        langName[uiLang] = langCode.toUpperCase();
+                    }
+                });
                 
                 return {
                     value: langCode,
@@ -302,8 +315,17 @@ function toggleLanguage() {
 
 // 更新UI语言
 function updateLanguage() {
+    // 更新页面标题
+    document.title = translations[state.language].title;
+    
+    // 更新UI元素
     document.getElementById('title').textContent = translations[state.language].title;
     document.getElementById('loading-text').textContent = translations[state.language].loading;
+    
+    // 更新保存按钮的提示文本
+    if (document.getElementById('save-button')) {
+        (document.getElementById('save-button')).title = translations[state.language].save;
+    }
     
     // 更新所有已生成的设置项的语言
     const settingLabels = document.querySelectorAll('.setting-label');
@@ -341,6 +363,27 @@ function updateLanguage() {
             });
         }
     });
+    
+    // 更新保存按钮
+    const saveButton = document.getElementById('save-button');
+    if (document.getElementById('save-button')) {
+        const saveSpan = (document.getElementById('save-button')).querySelector('span');
+        if (saveSpan) {
+            saveSpan.title = translations[state.language].save;
+        }
+    }
+    
+    // 更新语言切换按钮
+    const languageToggle = document.getElementById('language-toggle');
+    if (languageToggle) {
+        languageToggle.title = translations[state.language].languageSelect;
+    }
+    
+    // 更新主题切换按钮
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        themeToggle.title = state.isDarkMode ? '切换到亮色模式' : '切换到暗色模式';
+    }
 }
 
 // 加载设置
