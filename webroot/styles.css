@@ -48,27 +48,23 @@ body {
 .app-bar {
     display: flex;
     align-items: center;
-    /* 增加高度 */
-    height: 72px;
+    /* 减小高度 */
+    height: 64px;
     position: sticky;
     top: 0;
     background-color: var(--surface-color);
     z-index: 10;
-    /* 修改内边距设置，确保有足够空间 */
-    padding-top: 24px;
-    /* 使用 max() 函数确保至少有固定内边距，同时支持安全区域 */
-    padding-top: max(24px, env(safe-area-inset-top, 24px));
-    padding-top: max(24px, constant(safe-area-inset-top, 24px));
+    /* 使用更智能的内边距设置 */
+    padding-top: env(safe-area-inset-top, 8px);
+    padding-top: constant(safe-area-inset-top, 8px);
     /* 添加过渡效果 */
     transition: padding-top 0.3s;
 }
 
-/* 为标题添加一些样式调整 */
+/* 调整标题样式，移除不明显的阴影 */
 .app-bar h1 {
     font-size: 22px;
     font-weight: 400;
-    /* 添加一点文字阴影增强可读性 */
-    text-shadow: 0 1px 1px rgba(0,0,0,0.05);
 }
 
 .spacer {
