@@ -126,21 +126,7 @@ Currently, AMMF WebUI supports the following languages:
 
 ### Adding a New Language
 
-1. Add a new language in the `translations` object in `script.js`:
-
-```javascript
-const translations = {
-  en: { /* English translations */ },
-  zh: { /* Chinese translations */ },
-  jp: { /* Japanese translations */ },
-  ru: { /* Russian translations */ },
-  new_lang: { /* New language translations */ }
-};
-```
-
-2. Add descriptions and labels for the new language in `settings_descriptions.json` and `settings_options.json`.
-
-3. Add a function for the new language in `settings/languages.ini`:
+1. Add a function for the new language in `settings/languages.ini`:
 
 ```bash
 lang_new_lang() {
@@ -166,6 +152,8 @@ lang_new_lang() {
   # Other translation items
 }
 ```
+
+2. Add descriptions and labels for the new language in `settings_descriptions.json` and `settings_options.json`.
 
 ## 🎨 Customizing Styles
 

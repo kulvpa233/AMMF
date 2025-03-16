@@ -126,21 +126,7 @@ new_setting="default_value"
 
 ### 添加新语言
 
-1. 在`script.js`的`translations`对象中添加新语言：
-
-```javascript
-const translations = {
-  en: { /* 英文翻译 */ },
-  zh: { /* 中文翻译 */ },
-  jp: { /* 日语翻译 */ },
-  ru: { /* 俄语翻译 */ },
-  new_lang: { /* 新语言翻译 */ }
-};
-```
-
-2. 在`settings_descriptions.json`和`settings_options.json`中添加新语言的描述和标签。
-
-3. 在`settings/languages.ini`中添加新语言的函数：
+1. 在`settings/languages.ini`中添加新语言的函数：
 
 ```bash
 lang_new_lang() {
@@ -166,6 +152,8 @@ lang_new_lang() {
   # 其他翻译项
 }
 ```
+
+2. 在`settings_descriptions.json`和`settings_options.json`中添加新语言的描述和标签。
 
 ## 🎨 自定义样式
 
