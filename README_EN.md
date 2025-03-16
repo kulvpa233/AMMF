@@ -43,6 +43,10 @@ Welcome to use this module framework! Here are the steps to get started:
 - This framework is suitable for **GitHub Action** to package modules.
 - This framework removes `META-INF` by default, please add it yourself if needed.
 
+## 📝 Update Notes
+
+- For future updates to the module framework, please check the [Update Notes](CHANGELOG.md).
+
 ---
 
 PRs are welcome. If you find it useful, please give it a star. Thank you for using this framework! 🚀
