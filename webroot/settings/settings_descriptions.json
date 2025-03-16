@@ -3,48 +3,8 @@
     "en": "Default language for printing",
     "zh": "默认显示语言"
   },
-  "CustomScript": {
-    "en": "Enable custom script execution",
-    "zh": "启用自定义脚本执行"
-  },
-  "SDCARD": {
-    "en": "Path to user-space sdcard",
-    "zh": "用户空间 SD 卡路径"
-  },
   "download_destination": {
     "en": "Download path for module files",
     "zh": "模块文件下载路径"
-  },
-  "max_retries": {
-    "en": "Maximum number of download retries",
-    "zh": "下载重试最大次数"
-  },
-  "CustomScriptPath": {
-    "en": "Path to custom script",
-    "zh": "自定义脚本路径"
-  },
-  "langpath": {
-    "en": "Path to language settings file",
-    "zh": "语言设置文件路径"
-  },
-  "script_path": {
-    "en": "Path to the script path file",
-    "zh": "脚本路径文件位置"
-  },
-  "magisk_min_version": {
-    "en": "Minimum required version of Magisk",
-    "zh": "Magisk 最低版本要求"
-  },
-  "ksu_min_version": {
-    "en": "Minimum compatible version of KernelSU",
-    "zh": "KernelSU 最低兼容版本"
-  },
-  "ksu_min_kernel_version": {
-    "en": "Minimum compatible kernel version of KernelSU",
-    "zh": "KernelSU 内核最低兼容版本"
-  },
-  "apatch_min_version": {
-    "en": "Minimum compatible version of APatch",
-    "zh": "APatch 最低兼容版本"
   }
 }
