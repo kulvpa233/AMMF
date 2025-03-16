@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # 为了确保后期同步AMMF新版本和使用Path.sh中变量，请勿随意修改
-ACTION_PATH="$NOW_PATH/AMMF/settings/script/User_START.sh"
 NOW_PATH="/data/local/tmp"
+ACTION_PATH="$NOW_PATH/AMMF/settings/script/User_START.sh"
 MODPATH=${0%/*}
 current_dir=$(pwd)
 temp_dirs=("/tmp" "/temp" "/Temp" "/TEMP" "/TMP" "/Android/data")
