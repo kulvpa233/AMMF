@@ -35,9 +35,7 @@ Welcome to use this module framework! Here are the steps to get started:
 ## 🖱️ User Scripts
 
 - `Click.sh` can be used by users to execute scripts provided by the module outside the module.
-- `action.sh` and `Click.sh` actually execute scripts in `./settings/script/custom_script_user.sh`.
-- `Click.sh` uses `busybox` to execute `./settings/script/custom_script_user.sh`.
-- All scripts are executed in `/data/local/tmp/`.
+- `Click.sh` uses `busybox` to execute `./settings/script/custom_script_user.sh` in `/data/local/tmp/`.
 - This framework provides some functions, please read the [instructions](SCRIPT_EN.md).
 
 ## 🏗️ Framework Applicability
