@@ -13,6 +13,7 @@
     "magisk_min_version",
     "ksu_min_version",
     "ksu_min_kernel_version",
+    "user_script_path",
     "apatch_min_version",
     "ANDROID_API"
   ]

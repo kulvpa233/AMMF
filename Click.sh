@@ -1,4 +1,6 @@
 #!/system/bin/sh
+# 为了确保后期同步AMMF新版本和使用Path.sh中变量，请勿随意修改
+ACTION_PATH="$NOW_PATH/AMMF/settings/script/User_START.sh"
 NOW_PATH="/data/local/tmp"
 MODPATH=${0%/*}
 current_dir=$(pwd)
@@ -49,4 +51,4 @@ echo ""
 mkdir -p "$NOW_PATH"/AMMF/
 cp -r "$MODPATH"/* "$NOW_PATH"/AMMF/
 chmod -R 755 "$NOW_PATH"/AMMF/
-ASH_STANDALONE=1 $BUSYBOX_PATH sh "$NOW_PATH"/AMMF/settings/script/User.sh "$MODPATH" "$NOW_PATH/AMMF"
+ASH_STANDALONE=1 $BUSYBOX_PATH sh "$ACTION_PATH" "$MODPATH" "$NOW_PATH/AMMF" "Click"

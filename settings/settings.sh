@@ -16,6 +16,7 @@ max_retries=3                      # Maximum number of download retries
 CustomScriptPath="/settings/custom_script.sh"   # Path to custom script
 langpath="/settings/languages.ini"              # Path to language settings file
 script_path="/settings/script/Path.sh"     # Path to the script path file
+user_script_path="/settings/custom_script_user.sh"   # Path to the user script file
 
 # Advanced settings
 

@@ -8,13 +8,8 @@
 # shellcheck disable=SC2164
 MODPATH="$1"
 NOW_PATH="$2"
-
-
-main() {
-    echo ""
-    # your code here
-}
-
+if [ "$3" = "Action" ]; then
+    Action=true
 
 abort() {
     echo "$1"
@@ -48,8 +43,12 @@ else
     # shellcheck disable=SC1090
     . "$NOW_PATH/$script_path"
 fi
-main
+if [! -f "$NOW_PATH/$user_script_path" ]; then
+    abort "Notfound File!!!($user_script_path)"
+else
+    # shellcheck disable=SC1090
+    . "$NOW_PATH/$user_script_path"
+fi
 echo ""
 rm -rf "$NOW_PATH"
-echo -e "\033[32;49;1m [DONE] \033[39;49;0m"
 exit 0

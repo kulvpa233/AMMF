@@ -34,8 +34,10 @@
 
 ## 🖱️ 用户脚本
 
-- `Click.sh` 可供用户在模块外执行模块提供的适用于用户的脚本，可改为 `action.sh`（Magisk内执行有某些限制）。
-- `Click.sh` 通过 `busybox` 实现使用 `./settings/script/User.sh`，在 `/data/local/tmp/` 内执行。
+- `Click.sh` 可供用户在模块外执行模块提供的适用于用户的脚本。
+- `action.sh` 与 `Click.sh` 实际执行`./settings/script/custom_script_user.sh` 中的脚本
+- `Click.sh` 通过 `busybox` 执行 `./settings/script/custom_script_user.sh`。
+- 脚本皆在 `/data/local/tmp/` 内执行。
 - 本框架提供了一些函数，请阅读 [使用说明](SCRIPT.md)
 
 ## 🏗️ 框架适用性
