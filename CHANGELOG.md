@@ -47,19 +47,3 @@
 #### (Files to note when upgrading from previous version)
 - User.sh …… User_Start.sh / custom_script_user.sh
 - Settings.sh
-
-### 1.0.0 (2023-12-01)
-
-#### Added
-- Initial release
-- Multi-language support (Chinese, English, Japanese, Russian)
-- WebUI settings interface
-- Custom script support
-- User script support (Click.sh)
-
-#### Improved
-- Optimized module installation process
-- Enhanced error handling mechanism
-
-#### Fixed
-- Fixed version checking logic
