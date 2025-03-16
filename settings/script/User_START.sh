@@ -6,13 +6,8 @@
 # shellcheck disable=SC2046
 # shellcheck disable=SC3045
 # shellcheck disable=SC2164
-if [ -z "$1" ]; then
-    echo "Action"
-    Action=true
-else
     MODPATH="$1"
     NOW_PATH="$2"
-fi
 abort() {
     echo "$1"
     exit 1
