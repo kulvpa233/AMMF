@@ -6,11 +6,13 @@
 # shellcheck disable=SC2046
 # shellcheck disable=SC3045
 # shellcheck disable=SC2164
-MODPATH="$1"
-NOW_PATH="$2"
-if [ "$3" = "Action" ]; then
+if [ -z "$1" ]; then
+    echo "Action"
     Action=true
-
+else
+    MODPATH="$1"
+    NOW_PATH="$2"
+fi
 abort() {
     echo "$1"
     exit 1
@@ -43,7 +45,7 @@ else
     # shellcheck disable=SC1090
     . "$NOW_PATH/$script_path"
 fi
-if [! -f "$NOW_PATH/$user_script_path" ]; then
+if [ ! -f "$NOW_PATH/$user_script_path" ]; then
     abort "Notfound File!!!($user_script_path)"
 else
     # shellcheck disable=SC1090

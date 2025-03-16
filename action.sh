@@ -10,4 +10,4 @@ mkdir -p "$NOW_PATH"/AMMF/
 cp -r "$MODPATH"/* "$NOW_PATH"/AMMF/
 chmod -R 755 "$NOW_PATH"/AMMF/
 
-sh "$ACTION_PATH" "$MODPATH" "$NOW_PATH/AMMF" "Action"
+. "$ACTION_PATH"

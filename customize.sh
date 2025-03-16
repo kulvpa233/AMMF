@@ -45,9 +45,19 @@ version_check() {
     fi
 }
 replace_module_id() {
-    if [ -f "$MODPATH/webroot/js/app.js" ] && [ -n "$MODID" ]; then
+    if [ -f "$MODPATH/webroot/script.js" ] && [ -n "$MODID" ]; then
         Aurora_ui_print "Setting WebUI..."
         sed -i "s/AMMF/$MODID/g" "$MODPATH/webroot/js/app.js"
+        Aurora_ui_print "WebUI Done"
+    fi
+        if [ -f "$MODPATH/action.sh" ] && [ -n "$MODID" ]; then
+        Aurora_ui_print "Setting action.sh..."
+        sed -i "s/AMMF/$MODID/g" "$MODPATH/action.sh"
+        Aurora_ui_print "WebUI Done"
+    fi
+        if [ -f "$MODPATH/Cilck.sh" ] && [ -n "$MODID" ]; then
+        Aurora_ui_print "Setting Cilck.sh..."
+        sed -i "s/AMMF/$MODID/g" "$MODPATH/Cilck.sh"
         Aurora_ui_print "WebUI Done"
     fi
 }
