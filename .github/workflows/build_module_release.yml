@@ -20,6 +20,7 @@ jobs:
           mkdir -p files/modules
           mkdir -p files/patches/{apks,modules,sdcard,data}
           mkdir -p settings
+          mkdir -p docs
 
       - name: Install 7z
         uses: edgarrc/action-7z@v1.0.5
@@ -36,7 +37,7 @@ jobs:
             LATEST_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
             echo "$LATEST_TAG" > latest_tag.txt
 
-      - name: Make module.prop and compress files
+      - name: Make module.prop and prepare files
         run: |
             LATEST_TAG=$(cat latest_tag.txt)
             CURRENT_TIME=$(cat current_time.txt)
@@ -48,6 +49,20 @@ jobs:
             echo "author=AuroraNasa" >> module.prop
             echo "description=${MODULE_DES}" >> module.prop
             cat module.prop
+            
+      - name: Move documentation files to docs folder
+        run: |
+          # 移动所有文档文件到docs文件夹
+          cp -f *.md docs/ 2>/dev/null || true
+          cp -f LICENSE docs/ 2>/dev/null || true
+          cp -f *.txt docs/ 2>/dev/null || true
+          # 确保docs文件夹存在，即使没有文档文件
+          mkdir -p docs
+            
+      - name: Compress files
+        run: |
+            LATEST_TAG=$(cat latest_tag.txt)
+            . ./settings/settings.sh
             7z a -r -mx9 "${MODULE_NAME}_${LATEST_TAG}.zip" * -x!*.git* -x!*.zip -x!latest_tag.txt -x!current_time.txt
 
       - name: Create GitHub release

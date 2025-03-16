@@ -22,6 +22,7 @@ jobs:
            mkdir -p files/patches/sdcard
            mkdir -p files/patches/data
            mkdir -p settings/
+           mkdir -p docs/
 
       - name: Get current time
         run: |
@@ -52,6 +53,15 @@ jobs:
 
       - name: Set short SHA
         run: echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Move documentation files to docs folder
+        run: |
+          # 移动所有文档文件到docs文件夹
+          cp -f *.md docs/ 2>/dev/null || true
+          cp -f LICENSE docs/ 2>/dev/null || true
+          cp -f *.txt docs/ 2>/dev/null || true
+          # 确保docs文件夹存在，即使没有文档文件
+          mkdir -p docs
           
       - name: Upload zip files as artifacts
         uses: actions/upload-artifact@v4
