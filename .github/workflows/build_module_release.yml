@@ -53,11 +53,10 @@ jobs:
       - name: Move documentation files to docs folder
         run: |
           # 移动所有文档文件到docs文件夹
-          cp -f *.md docs/ 2>/dev/null || true
-          cp -f LICENSE docs/ 2>/dev/null || true
-          cp -f *.txt docs/ 2>/dev/null || true
-          # 确保docs文件夹存在，即使没有文档文件
           mkdir -p docs
+          mv -f *.md docs/ 2>/dev/null || true
+          mv -f LICENSE docs/ 2>/dev/null || true
+          mv -f *.txt docs/ 2>/dev/null || true
             
       - name: Compress files
         run: |
