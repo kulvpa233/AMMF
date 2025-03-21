@@ -22,7 +22,7 @@ body:
     id: environment
     attributes:
       label: 环境
-      description: 请描述您所使用的Magisk或KernelSU或APatch及其版本等信息。
+      description: 请描述您所使用的 Magisk 或 KernelSU 或 APatch 及其版本等信息。
       placeholder: 例如：Magisk v28.1
 
   - type: textarea

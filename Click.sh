@@ -14,9 +14,9 @@ for dir in "${temp_dirs[@]}"; do
     fi
 done
 if [ "$(whoami)" != "root" ]; then
-    echo "此脚本必须以root权限运行。请使用root用户身份运行此脚本。"
+    echo "此脚本必须以 root 权限运行。请使用 root 用户身份运行此脚本。"
     echo "This script must be run with root privileges. Please run this script as a root user."
-    echo "このスクリプトはroot権限で実行する必要があります。このスクリプトをrootユーザーとして実行してください。"
+    echo "このスクリプトは root 権限で実行する必要があります。このスクリプトを root ユーザーとして実行してください。"
     exit 1
 fi
 detect_environment() {

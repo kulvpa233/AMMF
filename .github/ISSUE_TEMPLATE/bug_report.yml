@@ -1,12 +1,12 @@
-name: 反馈Bug
-description: 请提供详细的Bug报告，以便我们能够更快地解决问题。
+name: 反馈 Bug
+description: 请提供详细的 Bug 报告，以便我们能够更快地解决问题。
 title: "[Bug] 标题简要描述问题"
 labels: bug
 body:
   - type: markdown
     attributes:
       value: |
-        感谢您提交Bug报告！请填写以下信息，以帮助我们更好地了解和解决问题。
+        感谢您提交 Bug 报告！请填写以下信息，以帮助我们更好地了解和解决问题。
 
   - type: checkboxes
     attributes:
@@ -15,10 +15,10 @@ body:
           - label: 我使用的本模块已经更新到最新版本了？
             required: false
 
-          - label: 我使用的本模块是Action CI build 版本？
+          - label: 我使用的本模块是 Action CI build 版本？
             required: false
 
-          - label: 我使用的Magisk或KernelSU或APatch已更新到最新版本？
+          - label: 我使用的 Magisk 或 KernelSU 或 APatch 已更新到最新版本？
             required: false
 
           - label: 关于自定义脚本的问题？
@@ -28,7 +28,7 @@ body:
     id: environment
     attributes:
       label: 环境
-      description: 请描述您所使用的Magisk或KernelSU或APatch及其版本等信息。
+      description: 请描述您所使用的 Magisk 或 KernelSU 或 APatch 及其版本等信息。
       placeholder: 例如：Magisk v28.1
 
   - type: textarea

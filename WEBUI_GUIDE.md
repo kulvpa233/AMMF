@@ -4,11 +4,11 @@
 
 ## 📱 WebUI 概述
 
-AMMF框架提供了一个基于Web的用户界面，允许用户通过图形化界面配置模块设置。WebUI使用现代化的Material Design风格，支持多语言和暗色模式，为用户提供了良好的体验。
+AMMF 框架提供了一个基于 Web 的用户界面，允许用户通过图形化界面配置模块设置。WebUI 使用现代化的 Material Design 风格，支持多语言和暗色模式，为用户提供了良好的体验。
 
 ## 🗂️ 文件结构
 
-WebUI相关文件位于`webroot`目录下：
+WebUI 相关文件位于 `webroot` 目录下：
 
 ```
 webroot/
@@ -25,7 +25,7 @@ webroot/
 
 ### 1. excluded_settings.json
 
-此文件定义了不在WebUI中显示的设置项列表。
+此文件定义了不在 WebUI 中显示的设置项列表。
 
 ```json
 {
@@ -66,18 +66,18 @@ webroot/
 }
 ```
 
-## 🛠️ 自定义WebUI
+## 🛠️ 自定义 WebUI
 
 ### 添加新设置项
 
-1. 在`settings.sh`中添加新的变量：
+1. 在 `settings.sh` 中添加新的变量：
 
 ```bash
 # 在settings.sh中添加
 new_setting="default_value"
 ```
 
-2. 在`settings_descriptions.json`中添加描述：
+2. 在 `settings_descriptions.json` 中添加描述：
 
 ```json
 {
@@ -88,7 +88,7 @@ new_setting="default_value"
 }
 ```
 
-3. 如果需要预设选项，在`settings_options.json`中添加：
+3. 如果需要预设选项，在 `settings_options.json` 中添加：
 
 ```json
 {
@@ -103,7 +103,7 @@ new_setting="default_value"
 
 ### 排除设置项
 
-如果不希望某些设置项在WebUI中显示，将其添加到`excluded_settings.json`的`excluded`数组中。
+如果不希望某些设置项在 WebUI 中显示，将其添加到 `excluded_settings.json` 的 `excluded` 数组中。
 
 ```json
 {
@@ -118,7 +118,7 @@ new_setting="default_value"
 
 ### 支持的语言
 
-目前AMMF WebUI支持以下语言：
+目前 AMMF WebUI 支持以下语言：
 - 英语 (en)
 - 中文 (zh)
 - 日语 (jp)
@@ -126,7 +126,7 @@ new_setting="default_value"
 
 ### 添加新语言
 
-1. 在`settings/languages.ini`中添加新语言的函数：
+1. 在 `settings/languages.ini` 中添加新语言的函数：
 
 ```bash
 lang_new_lang() {
@@ -153,15 +153,15 @@ lang_new_lang() {
 }
 ```
 
-2. 在`settings_descriptions.json`和`settings_options.json`中添加新语言的描述和标签。
+2. 在 `settings_descriptions.json` 和 `settings_options.json` 中添加新语言的描述和标签。
 
 ## 🎨 自定义样式
 
-可以通过修改`styles.css`文件来自定义WebUI的外观：
+可以通过修改 `styles.css` 文件来自定义 WebUI 的外观：
 
 - 修改颜色变量以更改主题色
 - 调整组件尺寸和间距
-- 添加新的CSS类以支持新功能
+- 添加新的 CSS 类以支持新功能
 
 ```css
 :root {
@@ -173,24 +173,24 @@ lang_new_lang() {
 
 ## 📋 设置类型
 
-WebUI支持以下类型的设置项：
+WebUI 支持以下类型的设置项：
 
 1. **文本** - 字符串值
-2. **布尔值** - true/false开关
+2. **布尔值** - true/false 开关
 3. **数字** - 带滑动条或直接输入的数值
 4. **选择框** - 预定义选项的下拉菜单
 
-系统会根据`settings.sh`中变量的值自动检测类型，也可以通过`settings_options.json`指定为选择框类型。
+系统会根据 `settings.sh` 中变量的值自动检测类型，也可以通过 `settings_options.json` 指定为选择框类型。
 
 ## 🔄 工作原理
 
-WebUI的工作流程：
+WebUI 的工作流程：
 
-1. 加载`settings.sh`中的设置项
-2. 排除`excluded_settings.json`中列出的项
-3. 应用`settings_descriptions.json`中的描述
-4. 为`settings_options.json`中定义的项创建选择框
-5. 用户修改设置后，点击保存按钮将更新写入`settings.sh`
+1. 加载 `settings.sh` 中的设置项
+2. 排除 `excluded_settings.json` 中列出的项
+3. 应用 `settings_descriptions.json` 中的描述
+4. 为 `settings_options.json` 中定义的项创建选择框
+5. 用户修改设置后，点击保存按钮将更新写入 `settings.sh`
 
 ## 🚀 最佳实践
 
@@ -198,8 +198,8 @@ WebUI的工作流程：
 2. 使用合适的设置类型（文本、布尔值、数字、选择框）
 3. 排除不应由用户修改的技术性设置项
 4. 为所有用户界面元素提供多语言支持
-5. 保持设计一致性，遵循Material Design风格
+5. 保持设计一致性，遵循 Material Design 风格
 
 ---
 
-如有任何问题或建议，欢迎提交PR或Issue！
+如有任何问题或建议，欢迎提交 PR 或 Issue！
