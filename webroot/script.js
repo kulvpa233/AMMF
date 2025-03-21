@@ -1,6 +1,6 @@
 // 语言配置
 const translations = {
-    // 基础翻译，后续会从languages.ini动态加载更多
+    // 基础翻译，后续会从 languages.ini 动态加载更多
     en: {
         title: 'AMMF Settings',
         save: 'Save',
@@ -70,7 +70,7 @@ async function initApp() {
         document.getElementById('language-toggle').addEventListener('click', showLanguageMenu);
         document.getElementById('save-button').addEventListener('click', saveSettings);
         
-        // 更新UI语言
+        // 更新 UI 语言
         updateLanguage();
     } catch (error) {
         console.error('Error initializing app:', error);
@@ -81,10 +81,10 @@ async function initApp() {
 // 加载可用语言
 async function loadAvailableLanguages() {
     try {
-        // 尝试从languages.ini加载语言配置
+        // 尝试从 languages.ini 加载语言配置
         const languagesContent = await execCommand('cat /data/adb/modules/AMMF/settings/languages.ini');
         
-        // 解析languages.ini文件
+        // 解析 languages.ini 文件
         const languageFunctions = languagesContent.match(/lang_([a-z]{2,})\(\)/g);
         
         if (languageFunctions && languageFunctions.length > 0) {
@@ -96,7 +96,7 @@ async function loadAvailableLanguages() {
             
             // 为每种语言加载翻译
             for (const langCode of state.availableLanguages) {
-                // 如果translations中没有该语言，则初始化
+                // 如果 translations 中没有该语言，则初始化
                 if (!translations[langCode]) {
                     translations[langCode] = {
                         ...translations.en, // 使用英语作为基础
@@ -117,9 +117,9 @@ async function loadAvailableLanguages() {
                                 const key = match[1];
                                 const value = match[2];
                                 
-                                // 将WebUI相关的键映射到translations对象
+                                // 将 WebUI 相关的键映射到 translations 对象
                                 if (key.startsWith('WEBUI_')) {
-                                    // 移除WEBUI_前缀并转换为小写
+                                    // 移除 WEBUI_ 前缀并转换为小写
                                     const translationKey = key.replace('WEBUI_', '').toLowerCase();
                                     translations[langCode][translationKey] = value;
                                 } else if (key === 'ERROR_TEXT') {
@@ -177,7 +177,7 @@ function showLanguageMenu() {
             langOption.classList.add('selected');
         }
         
-        // 使用从languages.ini加载的语言名称
+        // 使用从 languages.ini 加载的语言名称
         let langName = langCode.toUpperCase();
         if (translations[langCode] && translations[langCode].languageName) {
             langName = translations[langCode].languageName;
@@ -220,7 +220,7 @@ async function loadExcludedSettings() {
         const excludedData = JSON.parse(excludedContent);
         state.excludedSettings = excludedData.excluded || [];
         
-        // 确保MODULE_ID被排除
+        // 确保 MODULE_ID 被排除
         if (!state.excludedSettings.includes('MODULE_ID')) {
             state.excludedSettings.push('MODULE_ID');
         }
@@ -251,13 +251,13 @@ async function loadSettingsOptions() {
         const optionsContent = await execCommand('cat /data/adb/modules/AMMF/webroot/settings/settings_options.json');
         state.settingsOptions = JSON.parse(optionsContent);
         
-        // 动态更新print_languages选项，使其包含所有可用语言
+        // 动态更新 print_languages 选项，使其包含所有可用语言
         if (state.settingsOptions.print_languages && state.availableLanguages.length > 0) {
             state.settingsOptions.print_languages.options = state.availableLanguages.map(langCode => {
-                // 使用从languages.ini加载的语言名称
+                // 使用从 languages.ini 加载的语言名称
                 let langName = {};
                 
-                // 为每种UI语言提供当前语言的名称
+                // 为每种 UI 语言提供当前语言的名称
                 state.availableLanguages.forEach(uiLang => {
                     if (translations[langCode] && translations[langCode].languageName) {
                         // 如果有该语言的本地化名称，优先使用
@@ -313,12 +313,12 @@ function toggleLanguage() {
     updateLanguage();
 }
 
-// 更新UI语言
+// 更新 UI 语言
 function updateLanguage() {
     // 更新页面标题
     document.title = translations[state.language].title;
     
-    // 更新UI元素
+    // 更新 UI 元素
     document.getElementById('title').textContent = translations[state.language].title;
     document.getElementById('loading-text').textContent = translations[state.language].loading;
     
@@ -389,7 +389,7 @@ function updateLanguage() {
 // 加载设置
 async function loadSettings() {
     try {
-        // 使用KSU执行命令获取settings.sh内容
+        // 使用 KSU 执行命令获取 settings.sh 内容
         const settingsContent = await execCommand('cat /data/adb/modules/AMMF/settings/settings.sh');
         
         // 解析设置文件
@@ -536,7 +536,7 @@ function generateSettingsForm() {
             input.checked = setting.value === 'true';
             input.id = `setting-${key}`;
             input.addEventListener('change', function() {
-                // 修复布尔值实时更新的bug
+                // 修复布尔值实时更新的 bug
                 const booleanValue = switchContainer.querySelector('.boolean-value');
                 booleanValue.textContent = this.checked ? 
                     translations[state.language].booleanTrue : 
@@ -571,7 +571,7 @@ function generateSettingsForm() {
             // 数字值
             const numValue = parseInt(setting.value);
             
-            // 如果数字大于100，直接使用输入框
+            // 如果数字大于 100，直接使用输入框
             const useInputBox = numValue > 100;
             
             // 创建输入框
@@ -696,7 +696,7 @@ async function saveSettings() {
             }
         }
         
-        // 生成新的settings.sh内容
+        // 生成新的 settings.sh 内容
         let newContent = '';
         
         // 获取原始文件内容以保留注释
@@ -742,13 +742,13 @@ function showSnackbar(message) {
     snackbar.textContent = message;
     snackbar.className = 'show';
     
-    // 3秒后隐藏
+    // 3 秒后隐藏
     setTimeout(() => {
         snackbar.className = snackbar.className.replace('show', '');
     }, 3000);
 }
 
-// 执行shell命令
+// 执行 shell 命令
 async function execCommand(command) {
     const callbackName = `exec_callback_${Date.now()}`;
     return new Promise((resolve, reject) => {

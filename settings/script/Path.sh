@@ -69,7 +69,7 @@ ui_print() {
     fi
     echo "$1"
 }
-#About_the_custom_script
+# About_the_custom_script
 ###############
 un_zstd_tar() {
     Aurora_test_input "un_zstd_tar" "1" "$1"
@@ -158,7 +158,7 @@ select_on_magisk() {
     group_chars="$NOW_PATH/TEMP/group_chars.tmp"
     # 主循环处理每个字符位置
     while [ "$(wc -l <"$CURRENT_FILES")" -gt 1 ]; do
-        # 处理第N个字符
+        # 处理第 N 个字符
         cut -c "$CHAR_POS" "$CURRENT_FILES" | tr '[:lower:]' '[:upper:]' | sort -u >"$current_chars"
 
         CHAR_COUNT=$(wc -l <"$current_chars")

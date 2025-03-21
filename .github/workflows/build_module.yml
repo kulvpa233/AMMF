@@ -56,7 +56,7 @@ jobs:
 
       - name: Move documentation files to docs folder
         run: |
-          # 移动所有文档文件到docs文件夹
+          # 移动所有文档文件到 docs 文件夹
           mkdir -p docs
           mv -f *.md docs/ 2>/dev/null || true
           mv -f LICENSE docs/ 2>/dev/null || true

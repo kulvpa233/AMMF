@@ -27,10 +27,10 @@
 - 应该选择 `./settings/custom_script.sh` 作为自定义脚本。
 - 本框架提供了一些函数，请阅读 [使用说明](SCRIPT.md)
 
-## 🌐 自定义WebUI
+## 🌐 自定义 WebUI
 
-- WEBUI可以使用户方便的设置 `settings.sh` 中变量的值。
-[WEBUI 使用说明](WEBUI_GUIDE.md)
+- WebUI 可以使用户方便的设置 `settings.sh` 中变量的值。
+[WebUI 使用说明](WEBUI_GUIDE.md)
 
 ## 🖱️ 用户脚本
 
@@ -49,8 +49,8 @@
 
 ---
 
-欢迎PR，如果觉得好用可以Star哦，感谢使用本框架！🚀
+欢迎 PR，如果觉得好用可以 Star 哦，感谢使用本框架！🚀
 
-（闲的没事从AuroraNasa_Installer里面提取修改弄出来的玩意，不喜勿喷）
+（闲的没事从 AuroraNasa_Installer 里面提取修改弄出来的玩意，不喜勿喷）
 
 [def]: SCRIPT.md
