@@ -29,8 +29,8 @@
 
 ## 🌐 自定义 WebUI
 
-- WEBUI 可以使用户方便的设置 `settings.sh` 中变量的值。
-[WEBUI 使用说明](WEBUI_GUIDE.md)
+- WebUI 可以使用户方便的设置 `settings.sh` 中变量的值。
+[WebUI 使用说明](WEBUI_GUIDE.md)
 
 ## 🖱️ 用户脚本
 
