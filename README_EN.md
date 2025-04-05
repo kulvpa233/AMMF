@@ -5,6 +5,8 @@
     <img src="https://img.shields.io/github/license/Aurora-Nasa-1/AMMF" alt="GitHub License">
 </div>
 
+**New Version: [AMMF2](https://github.com/Aurora-Nasa-1/AMMF2)**
+
 # 🚀 Quick Start
 
 Welcome to use this module framework! Here are the steps to get started:
