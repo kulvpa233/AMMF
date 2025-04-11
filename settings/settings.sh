@@ -1,11 +1,11 @@
 # Script configuration parameters
-MODULE_ID=""
-MODULE_NAME=""
-MODULE_DES=""
+MODULE_ID="gxlc_hyper"
+MODULE_NAME="澎湃美化模块"
+MODULE_DES="美化澎湃OS"
 # Base path for module storage
 # MODPATH
 
-print_languages="en"                   # Default language for printing
+print_languages="cn"                   # Default language for printing
 CustomScript=true
 # Path definitions for various directories
 SDCARD="/storage/emulated/0"           # Path to user-space sdcard
